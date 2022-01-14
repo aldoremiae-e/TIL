@@ -116,7 +116,7 @@ else :
 
 ### 	반복 :
 
-#### 	1. while문 : 해당하는 조건일 동안 계속 반복, 종료조건이 반드시 필요!
+> #### 1. while문 : 해당하는 조건일 동안 계속 반복, 종료조건이 반드시 필요!
 
 ```python
 greeting = "Hello"
@@ -142,7 +142,7 @@ while i < 10 : # 해당 조건이 False가 되면 종료!
 
     
 
-#### 	2. for문 :  정해진 범위 내에서 계속 반복, 종료조건이 필요 없음
+> #### 2. for문 :  정해진 범위 내에서 계속 반복, 종료조건이 필요 없음
 
 ```python
 greeting = "Hello"
@@ -167,3 +167,77 @@ for i in range(0,10,1) :
   - 변수 i는 자동으로 리스트 범위를 이동
 
     ![image-20220114155938691](python_IDE.assets/image-20220114155938691.png)
+
+
+
+### 함수
+
+> #### 함수를 정의하여 반복되는 코드를 편리하게 사용하기 위해 쓰임
+>
+> ```python
+> def 함수이름(인자, 인자) :
+>     return 반환값
+> ```
+
+- 파이썬은 내장함수가 아주 튼튼하다
+
+  
+
+### 모듈
+
+> #### 함수나 변수 또는 클래스를 모아 놓은 파일
+
+- 랜덤함수로 점심메뉴 고르기
+
+```python
+#모듈 불러오기
+import random
+
+# 점심 메뉴 리스트를 만들고 (최소 3개 이상) 
+lunch = ['KFC', '버거킹', '맥도날드']
+
+today_menu = random.choice(lunch)
+
+# 출력 해보자
+print(today_menu)
+```
+
+- random.choice -> 랜덤하게 하나를 선택해서 뽑겠다 => type이 str값으로 나온다.
+
+![image-20220114165938529](python_basic.assets/image-20220114165938529.png)
+
+***질문***
+
+> 만약 import random을 안적는다면 name undefiend 에러가 뜹니다.
+
+- 왜냐면 random라는 함수가 정의되지 못했기 때문
+
+
+
+- 로또 
+
+```python
+#random 모듈 불러오기
+import random
+
+#숫자 통 (1,45)
+nums = range(1,46)
+
+#숫자 통에서 6개를 sample
+lotto = random.sample(nums,6)
+
+#결과 출력
+print(lotto)
+```
+
+- 내장함수 random 모듈을 import로 불러옴
+
+- 변수 nums에 리스트 range(1,46)을 저장
+
+  ​	 `tip` : *리스트는 무조건 s를 적어라, 복수 단수 구분하면 좋아요!*
+
+- 변수 lotto에 리스트에서 랜덤으로 6개의 값을 추출
+  - `random.sample(리스트,개수)`
+
+![image-20220114170411826](python_basic.assets/image-20220114170411826.png)
+
