@@ -49,8 +49,8 @@ IDE : '특정언어를 위한' 통합개발환경 (Pycharm)
   - 2)리스트(Array,List) : 박스(dust)를 여러개 이어붙이자, 0부터 시작, `dust = [40,50,80]` 
   - 3)딕셔너리: 견출지 붙인 박스(dust)들의 묶음, key : value, key를 이용하여 value값에 접근 `dust = {'영등포구':40, '강남구':50}`
     - 실습 2 : 점심메뉴 리스트 
-
 - 위에서 아래로, 오른쪽에서 왼쪽으로 흐름제어!
+- 
 
 > ### 조건 : 어떠한 condition(조건)일 때 실행된다.
 
@@ -71,7 +71,7 @@ else :				# else 옆에 : 무조건
 
 ![image-20220114162611971](python_basic.assets/image-20220114162611971.png)
 
-> 다중조건 : if / elif / else
+- 다중조건 : if / elif / else
 
 ```python
 dust = 100
