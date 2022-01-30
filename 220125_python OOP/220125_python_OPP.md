@@ -187,15 +187,70 @@ print(p1) # => 나는 miae
 
 ### 클래스
 
-### 메소드
+> 클래스 변수
+
+- 클래스 속성 : 한 클래스의 모든 인스턴스라도 똑같은 값을 가지고 있는 속성
+
+- 클래스 변수는 클래스 내부에서 정의
+
+```python
+class Circle:
+    pi = 3.14 # 클래스 변수
+    
+p1 = Circle() # p1 인스턴스변수
+p2 = Circle()
+
+p1.pi = 3.141592 # p1 인스턴스 변수의 클래스 변수 pi 를 변경
+print(p1.pi , Circle.pi) # 인스턴스 변수의 클래스 변수는 변경된 값, 클래스 변수는 그대로
+```
 
 
 
-## 객체지향의 핵심개념
+> 클래스 메소드
 
-### 추상화
+- @classmethod 데코레이터를 사용하여 정의
+  - 데코레이터 : 함수를 어떤 함수로 꾸며서 새로운 기능을 부여하는 역할
+- 호출 시 첫번째 인자로 클래스(cls) 가 전달.
 
-### 상속
+~~*모르겠음*~~
 
-### 다형성
+```python
+class MyClass:
+    
+    def instance_method(self):
+        return self
+    
+    @classmethod
+    def class_method(cls):
+        return cls
+    
+    @staticmethod
+    def static_method(arg):
+        return arg
+    
+# 인스턴스 메서드를 호출하여 반환된 결과(self)와 인스턴스(mc)를 비교해봅시다.
+# 1. id를 출력해 보고, 같은 id인지 확인
+# 2. == 연산자를 확인해 비교
+
+print(id(mc.instance_method()), id(mc)) # 2249969510480 2249969510480
+print(id(mc.instance_method())==id(mc)) # True
+
+print(id(MyClass.class_method()), id(MyClass)) # 2249952756016 2249952756016
+print(id(MyClass.class_method()) == MyClass) # False
+```
+
+
+
+> 스태틱 메소드
+
+- 스태틱 메소드 : 인스턴스 변수, 클래스 변수를 전혀 다루지 않는 메소드
+- 오직 기능(행동)만을 하는 메소드를 정의할 때 , 속성 다루지 X
+- @staticmethod 데코레이터를 사용하여 정의
+- 호출 시 어떠한 인자도 전달되지 않음 (클래스 정보에 접근 / 수정 불가)
+
+> 이름공간(namespace)
+
+- 클래스를 정의하면 클래스와 해당하는 이름 공간 생성된다.
+- 인스턴스를 만들면 인스턴스 객체가 생성되고 이름 공간 생성된다.
+- 인스턴스에서 특정 속성(데이터타입)에 접근하면, 인스턴스 - 클래스 순으로 탐색
 
