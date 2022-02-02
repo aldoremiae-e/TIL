@@ -248,6 +248,8 @@ print(id(MyClass.class_method()) == MyClass) # False
 - @staticmethod 데코레이터를 사용하여 정의
 - 호출 시 어떠한 인자도 전달되지 않음 (클래스 정보에 접근 / 수정 불가)
 
+
+
 > 이름공간(namespace)
 
 - 클래스를 정의하면 클래스와 해당하는 이름 공간 생성된다.
