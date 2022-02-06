@@ -53,7 +53,7 @@ s1. talk() # => 반갑습니다. 김학생입니다.
   - object가 classinfo의 인스턴스 또는 classinfo의 자식클래스일 경우 True 
 
     ```python
-    print(isinstance(s1, Student), isinstance(s1,Person)) # => True True
+    print(isinstance(s1,Student), isinstance(s1,Person)) # => True True
     ```
 
 
