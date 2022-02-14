@@ -1,0 +1,29 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 1200px;
+  margin: 200px auto;
+}
+
+h4 {
+  /* https://developer.mozilla.org/ko/docs/Web/CSS/CSS_Fonts */
+  font-size: 20px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+}
+/* p - arial */
+p {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 카드 너비 700px, 테두리 굵기 2px, ----, 검정 */
+.card {
+  /* https://developer.mozilla.org/ko/docs/Web/CSS/border-style */
+  width: 700px;
+  margin: 0 auto; /* 가운데 정렬 */
+  border: 2px dashed black;
+}

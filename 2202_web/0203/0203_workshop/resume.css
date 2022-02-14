@@ -1,0 +1,7 @@
+#ssafy > p:nth-child(2){
+  color: red;
+}
+
+#ssafy > p:nth-of-type(2){
+  color: blue;
+}
