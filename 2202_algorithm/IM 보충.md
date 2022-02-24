@@ -68,3 +68,103 @@
     ```
 
     - 모든 패턴을 다 찾으려면 : while 문으로 건너뛸 수 있도록 만들도록!
+
+    ```python
+    while i < N-M+1 :
+        for j in range(M):
+            if t[i+j] != p[j]:
+                break
+        else: # 아니면 건너 뛸 수 있도록
+            i = i +M -1 # 아래 i가 더해지므로 1을 빼줘
+        i += 1
+    ```
+
+    ------------------------------------------------------------------------------------------------------------------------
+
+
+
+## 델타
+
+델타 안쓰고
+
+```python
+N = 10
+arr = [[0]*N for _ in range(N)]
+r = c =7
+
+# 우
+for i in range(c+1, N):
+    arr[r][i] = 1
+# 하
+for i in range(r + 1, N):
+    arr[i][c] = 2
+# 좌
+for i in range(c-1,-1,-1):
+    arr[r][i] = 3
+# 상
+for i in range(r-1,-1,-1):
+    arr[i][c] = 4
+
+for lst in arr:
+    print(*lst)
+```
+
+```python
+0 0 0 0 0 0 0 4 0 0
+0 0 0 0 0 0 0 4 0 0
+0 0 0 0 0 0 0 4 0 0
+0 0 0 0 0 0 0 4 0 0
+0 0 0 0 0 0 0 4 0 0
+0 0 0 0 0 0 0 4 0 0
+0 0 0 0 0 0 0 4 0 0
+3 3 3 3 3 3 3 0 1 1
+0 0 0 0 0 0 0 2 0 0
+0 0 0 0 0 0 0 2 0 0
+```
+
+델타
+
+```python
+N = 10
+arr = [[0]*N for _ in range(N)]
+dr = [0, 1, 0, -1]
+dc = [1, 0, -1, 0]
+r = c = 5
+
+for i in range(4):
+    nr = r + dr[i]
+    nc = c + dc[i]
+    while (0 <= nr < N and 0 <= nc < N):
+        arr[nr][nc] = i + 1
+        nr = nr + dr[i]
+        nc = nc + dc[i]
+#            if nr < 0 or nr >= N or nr < 0 or nc >= N:
+#                break
+
+
+for lst in arr:
+    print(*lst)
+```
+
+
+
+- 정수같은 immutable 한 애들은 변경불가능하기 때문에, 함수 내에 변경하려면 global 써야함
+- 리스트같은 mutable 한 애들은 변경이 가능하기 때문에, 함수 내에서도 전역변수처럼 써도됨, 굳이 매개변수로 두지 않아도 됨!
+
+
+
+```python
+def row(arr, N):
+    for i in range(N):
+        for j in range(2,N-2):
+            if arr[i][j-2] == 'o' and arr[i][j-1] == 'o' and arr[i][j] == 'o' and arr[i][j+1] == 'o' and arr[i][j+2] == 'o':
+                return 1
+
+    # 세로
+def col(arr, N):
+    for j in range(N):
+        for i in range(2, N-2):
+            if arr[i-2][j] == 'o' and arr[i-1][j] == 'o' and arr[i][j] == 'o'
+    # 대각선
+```
+
