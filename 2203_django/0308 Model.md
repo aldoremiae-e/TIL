@@ -331,7 +331,8 @@ a3.delete()
   
   {% block body %}
     <h1> NEW </h1>
-    <form action="{% url 'pages:create' %}" method="GET">
+    <form action="{% url 'pages:create' %}" method="POST">
+      {% csrf_token %}
       <label for="title">제목: </label>
       <input type='text' id='title' name='title'>
       <label for="content">내용: </label>
@@ -542,18 +543,21 @@ a3.delete()
   {% extends 'base.html' %}
   
   {% block body %}
-    <h1> Edit </h1>
-    <form action="{% url 'pages:detail' article.pk %}" method="GET">
-      <label for="title">제목: </label>
-      <input type='text' id='title' name='title' value="{{article.title}}">
-      <label for="content">내용: </label>
-      <textarea id="content" name="content">{{article.content}}</textarea>
+    <h1>Edit</h1>
+    <form action="{% url 'pages:update' article.pk %}" method="POST">
+      {% csrf_token %}
+      <lable for="title">제목: </label>
+      <input type=text id='title' name='title' value='{{article.title}}'>
+      <label for='content'>내용: </label>
+      <textarea id='content' name='content'>{{article.content}}</textarea>
   
-      <input type='submit' value="제출">
+      <input type='submit' value='제출'>
     </form>
   {% endblock body %}
+  
+  
   ```
-
+  
   
 
 ### 5. Redirect
@@ -570,9 +574,12 @@ return redirect('articles:detail', pk = article.pk) #*args
 return redirect(f'/articles/{article.pk}/')
 ```
 
-함수의 인자를 URL로 받아야하기 때문에 'pages:detail' 이런식으로 받는 형식을 따름.
+- 함수의 인자를 변수화된 URL로 받아야하기 때문에 `'articles:detail'` 이런식으로 받는 형식을 따름.
 
+- 근데 `return redirect(f'/articles/{article.pk}/')`로 받으면 변수가 아니고 상수가 되므로 나중에 변경되면 응답을 못해 
 
+- `return render(request, 'articles/detail.html', context)` 로 쓰면 안되나요?
+  - views를 거치지 않기 때문에 에러가 뜬다.
 
 <img src="0308%20Model.assets/image-20220308231225527.png" alt="image-20220308231225527" style="zoom:50%;" />
 
@@ -586,8 +593,14 @@ return redirect(f'/articles/{article.pk}/')
 
 > 보통 POST를 쓴다.
 
+<CSRF 사이트 간 요청 위조로 인해 금지되어있다>
+
 get : 정보를 달라 => URL에 노출이 된다
 
 post : 등록해라 ( id, password ) => URL에 숨겨서 볼 수 있도록
 
 ![image-20220308175010629](0308%20Model.assets/image-20220308175010629.png)
+
+- **{% csrf_token %}**
+
+ 		:	 input 태그!!! type=hidden으로 되어있다. 서버에 요청해서 허가해달라는 뜻임
