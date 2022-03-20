@@ -595,9 +595,9 @@ return redirect(f'/articles/{article.pk}/')
 
 <CSRF 사이트 간 요청 위조로 인해 금지되어있다>
 
-get : 정보를 달라 => URL에 노출이 된다
+get : 정보 조회로 데이터를 가져오기만 하기때문에 body가 아닌 쿼리파라미터로 전송한다. => URL에 노출이 된다
 
-post : 등록해라 ( id, password ) => URL에 숨겨서 볼 수 있도록
+post : 서버로 데이터를 전송할 때 사용하기 때문에 HTTP body에 담아 전송한다( id, password ) => URL에 숨겨서 볼 수 있도록
 
 ![image-20220308175010629](0308%20Model.assets/image-20220308175010629.png)
 
