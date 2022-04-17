@@ -8,6 +8,37 @@
 
 
 
+## Model 개념
+
+> 웹 애플리케이션의 데이터를 구조화하고 조작하기 위한 도구
+
+
+
+- Django는 model을 통해 DB에 접속하고 관리를 한다.
+- 각각의 model은 하나의 DB 테이블에 매핑 되어있다.
+- 즉 model은 데이터에 대한 정보를 가지고 있고, 사용자가 저장하는 데이터들의 필수적인 필드들과 동작들을 포함한다.
+
+**DB : 체계화된 데이터의 모임**
+
+- 스키마 : DB에서 자료의 구조, 표현방법, 관계 등을 정의한 구조
+- 테이블 : 열(컬럼,필드,데이터형식) 행(레코드, 튜플, 데이터값)
+- PK : 각 행의 고유값, 반드시 설정하여야하고 데이터베이스 관리 및 설정에 주요하다.
+
+**쿼리 : 데이터를 조작하기 위한 명령어**
+
+**SQL : 구조화시킨 쿼리를 조작하기 위한 언어**
+
+
+
+## Migration
+
+| models.py | class에 필드값 생성,수정        |
+| --------- | ------------------------------- |
+| migration | python manage.py makemigrations |
+| migrate   | python manage.py migrate        |
+
+
+
 ### 1. models. py
 
 > Model - Class 만들기 혹은 변경시 - 속성: 필드(타입)
@@ -143,7 +174,15 @@ $  python manage.py migrate
 >
 > 관계형 데이터베이스 - **테이블**을 사용
 
+- DB를 객체로 조작하기 위해 ORM을 사용한다.
 
+- OOP 프로그래밍(Python)에서 관계형 데이터베이스 관리 시스템(SQLite)을 연동할 때, 데이터베이스와 객체 지향 프로그래밍 언어 간의 호환되지 않은 데이터를 변환한다. 
+
+  | 장점                                                         | 단점                                      |
+  | ------------------------------------------------------------ | ----------------------------------------- |
+  | SQL을 알지 못해도 DB 조작이 가능 <br>객체지향적 접근으로 생산성을 높일 수 있음 - 현대 웹 프레임워크의 요점은 생산성을 높이는 데 있기 때문에 큰 장점임 | ORM만으로 완전한 서비스를 구현하기 어려움 |
+
+  
 
 1. 장고 익스텐션 설치 및 앱 등록 , 실행
 
@@ -162,39 +201,125 @@ $ python manage.py shell_plus
 
 
 
-### 쿼리 조회
+## DB API
+
+> DB를 조작하기 위한 도구
+
+Model을 만들면 Django는 객체를 CRUD 할 수 있는 database-abstract API (database-access API)를 자동으로 만듬
+
+```bash
+#클래스이름.Manager.QuerySet API
+Article.objects.all
+```
+
+- 클래스이름 : models.py에 생성한 클래스 이름
+- Manager : Django 모델에 DB 쿼리 작업이 제공되는 인터페이스
+- QuerySet : 데이터베이스로부터 전달받은 객체 목록
+  - QuerySet 안에 객체는 0개, 1개 혹은 여러개 일 수 있다
+  - DB로부터 조회, 필터, 정렬 등을 수행할 수 있다.
+
+
+
+### CREATE
+
+```powershell
+# 조회했을 때 아직 쿼리셋에 아무 것도 없음
+In [3]: Article.objects.all()
+Out[3]: <QuerySet []>
+# Article 클래스로부터 article 인스턴스 생성
+In [4]: article = Article()
+# 값 할당 1번 방법
+article.title = 'first'
+article.content = 'django'
+
+# 아직 DB에 저장되어있지 않음
+In [5]: article
+Out[5]: <Article: >
+
+In [6]: Article.objects.all()
+Out[6]: <QuerySet []>
+
+# 인스턴스를 DB에 저장
+aritcle.save()
+
+In [13]: Article.objects.all()
+Out[13]: <QuerySet [<Article: first>]>
+In [14]: article
+Out[14]: <Article: first>
+```
+
+```powershell
+# 인스턴스에 할당방법 2번째
+In [17]: article = Article(title='second', content='django')
+
+In [18]: Article.objects.all()
+Out[18]: <QuerySet [<Article: first>]>
+# 인스턴스변수는 변했기 때문에 second
+In [19]: article
+Out[19]: <Article: second>
+
+In [20]: article.save()
+
+In [21]: article
+Out[21]: <Article: second>
+# DB에 저장된거 반영한 조회
+In [22]: Article.objects.all()
+Out[22]: <QuerySet [<Article: first>, <Article: second>]>
+
+```
+
+```shell
+# QuerySetAPI -create() 사용해서 할당 3번째
+
+In [25]: Article.objects.create(title='third', content='django')
+Out[25]: <Article: third>
+
+In [26]: Article.objects.all()
+Out[26]: <QuerySet [<Article: first>, <Article: second>, <Article: third>]>
+# 인스턴스 변수는 그대로 second
+In [27]: article
+Out[27]: <Article: second>
+```
+
+```python
+#model.py
+
+def __str__(self):
+    return self.title
+```
+
+- 표준 파이썬 클래스의 메소드인 str()을 정의하여, 각각의 객체가 사람이 읽을 수 있는 문자열을 반환하도록 할 수 있음. 작성후 shell_plus 재시작해야함.
+
+
+
+### READ
 
 #### all()
 
 > 해당 클래스(테이블) 데이터 조회 => QuerySet (객체들로 구성된)
 
-```python
-In [1]: Ariticle.objects.all()
-# => <QuerySet [<Article: Article object (1)>]>
+```shell
+Article.objects.all()
 ```
-
-- <img src="0308%20Model.assets/image-20220308141455301.png" alt="image-20220308141455301" style="zoom:50%;" />
 
 
 
 #### get() 
 
->  단일데이터 조회 => 객체, 오직 primary key 로만 접근 가능!
+>  단일데이터 조회 => 고유성이 있는 객체로만 접근이 가능하다
 >
 >  에러 상황 : 1. 데이터 결과가 없을 때	2. 데이터 결과가 중복되었을 때
 
 ```python
-In [23]: Article.objects.get(pk=1)
-# Out[23]: <Article: Article object (1)>
 
-In [24]: Article.objects.get(pk=100)
-# Article matching query does not exist.
+In [29]: Article.objects.get(pk=1)
+Out[29]: <Article: first>
 
-In [26]: Article.objects.get(title='제목')
-# 객체가 하나만 있는 경우
-	# Out[26]: <Article: Article object (1)>
-# 객체가 여러개 있는 경우
-	# MultipleObjectsReturned: get() returned more than one Article -- it returned 2!
+In [30]: Article.objects.get(pk=100)
+# DoesNotExist: Article matching query does not exist.
+
+In [31]: Article.objects.get(content='django')
+# MultipleObjectsReturned: get() returned more than one Article -- it returned 3!    
 ```
 
 
@@ -204,24 +329,27 @@ In [26]: Article.objects.get(title='제목')
 > 여러데이터 조회 = > Out : Queryset (리스트같은애) 이라는 객체로 접근 가능
 
 ```python
-Article.objects.filter(title='제목')
-# Out[16]: <QuerySet [<Article: Article object (1)>]>
-Article.objects.filter(title='제목')[0].content
-# Out[17]: '내용'
-Article.objects.filter(title='제목')[0].id
-# Out[18]: 1
-Article.objects.filter(title='제목')[0].created_at
-# Out[19]: datetime.datetime(2022, 3, 8, 5, 14, 10, 367455, tzinfo=<UTC>)
+In [32]: Article.objects.filter(content='django')
+Out[32]: <QuerySet [<Article: first>, <Article: second>, <Article: third>]>
 ```
 
 
 
-### Update
+### UPDATE
 
 ```python
-a2 = Article.objects.get(pk=2)
-a2.title = '변경된 제목'
-a2.save()
+# 인스턴스에 접근하여서 수정가능
+In [33]: article = Article.objects.get(pk=1)
+
+In [34]: article.title
+Out[34]: 'first'
+
+In [35]: article.title = 'first-update'
+
+In [36]: article.save()
+
+In [37]: article.title
+Out[37]: 'first-update'
 ```
 
 
@@ -229,13 +357,21 @@ a2.save()
 ### Delete
 
 ```python
-a3 = Article.objects.get(pk=3)
-a3.delete()
+In [38]: article = Article.objects.get(pk=1)
+
+In [39]: article.delete()
+Out[39]: (1, {'articles.Article': 1})
+
+# 조회하면 존재하지 않는다고 나옴
+In [40]: Article.objects.get(pk=1)
+DoesNotExist: Article matching query does not exist.
 ```
 
-<img src="0308%20Model.assets/image-20220308145251101.png" alt="image-20220308145251101" style="zoom: 50%;" />
+![image-20220418032656816](0308%20Model.assets/image-20220418032656816.png)
 
 
+
+<hr>
 
 ## 게시판 만들기
 
@@ -259,6 +395,17 @@ a3.delete()
       return render(request, 'pages/index.html', context)
   
   ```
+
+  ```python
+  # 정렬 순서를 내림차순으로 방법
+  def index(request):
+      # 파이썬이용: DB로 부터 받은 쿼리셋을 파이썬 언어로 변경
+      article = Article.object.all()[::-1]
+      # DB조작: 처음부터 내림차순 쿼리셋으로 받음
+      article = Article.object.order_by('-pk')
+  ```
+
+  
 
 - index.html
 
@@ -415,8 +562,12 @@ a3.delete()
 
   
 
-- views.py
+- views.py 
 
+  > 개별 게시글 상세 페이지, 글의 번호(pk)를 활용하여 페이지 구현 
+  >
+  > => Variable Routing 이용!!
+  >
   > article이라는 db에서 pk를 get 해서 가져와서 url에 쓸거임
 
   ```python
@@ -560,9 +711,13 @@ a3.delete()
   
   
 
-### 5. Redirect
+## Redirect
 
 > 다시 다른 웹페이지로 돌아가도록 지시
+
+- 새 URL로 요청을 다시 보냄
+- 인자에 따라 HttpResponseRedirect를 반환
+- 브라우저는 현재 경로에 따라 전체 URL 자체를 재구성
 
 ![image-20220309012420931](0308%20Model.assets/image-20220309012420931.png)
 
@@ -587,7 +742,20 @@ return redirect(f'/articles/{article.pk}/')
 
 
 
-## form 형식 속 method="GET->POST"
+## HTTP method 
+
+> form 형식 속 method="GET->POST"
+
+| GET                                     | POST                                              |
+| --------------------------------------- | ------------------------------------------------- |
+| 특정 리소스를 가져오도록 요청할 때 사용 | 서버로 데이터를 전송할 때 사용                    |
+| 반드시 데이터를 가져올 때만 사용        | 리소스를 생성/변경하기 위해 HTTP body에 담아 전송 |
+| DB에 변화를 주지 않음                   | 서버에 변경사항을 만듬                            |
+| CRUD 중 R                               | CRUD 중 CUD                                       |
+
+
+
+- 사이트 간 요청 위조 <403 forbidden>
 
 ![image-20220308174615359](0308%20Model.assets/image-20220308174615359.png)
 
@@ -604,3 +772,17 @@ post : 서버로 데이터를 전송할 때 사용하기 때문에 HTTP body에 
 - **{% csrf_token %}**
 
  		:	 input 태그!!! type=hidden으로 되어있다. 서버에 요청해서 허가해달라는 뜻임
+
+
+
+# 총정리
+
+1. Model : 웹 애플리케이션의 데이터를 구조화하고 조작하기 위한 도구
+2. Database : 체계화된 데이터의 집합
+3. Migration : Django가 model에 생긴 변화를 반영하는 방법
+
+4. ORM : 객체 지향 프로그래밍(OOP) 과 RDBMS 의 호환되지 않는 데이터를 변환하는 프로그래밍 기법
+
+5. Database API : DB를 조작하기 위한 도구 (QuerySet API, CRUD)
+
+   

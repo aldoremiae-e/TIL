@@ -17,9 +17,19 @@
 - ORDER BY / GROUP BY
 - ALTER TABLE
 
+### 3. Model Relationship1
+
+- Foreign Key
+- Customizing authentication in Django
+
+### 4. Model Relationship2
+
+- User - Article
+- User - Comment
+
 <hr>
 
-## Database
+## 1. Database
 
 > 데이터베이스는 체계화된 데이터의 모임
 
@@ -97,7 +107,7 @@ ex ) MySQL , SQLite, PostgreSQL, ORACLE, MS SQL 등
 
 <hr>
 
-## SQL (Structured Query Language)
+## 2. SQL (Structured Query Language)
 
 > 관계형 데이터베이스 관리시스템 (RDBMS) 의 데이터 관리를 위해 설계된 프로그래밍 언어
 
@@ -508,3 +518,265 @@ sqlite> ALTER TABLE news ADD COLUMN create_at TEXT NOT NULL;
 ```
 NOT NULL을 안써버리거나, DEFAULT '어쩌구'; 를 해놔버린다.
 ```
+
+
+
+<hr>
+
+## 3. Model Relationship
+
+### Foreign Key 
+
+> 외래키 : RDB에서 한 테이블의 필드 중 다른 테이블의 행을 식별할 수 있는 키
+
+- 참조하는 테이블에서 속성(필드)에 해당하고, 참조되는 테이블에서 기본 키(PK)를 가리킨다.
+
+  - 참조하는 테이블의 외래 키는 참조되는 테이블 행 1개에 대응
+
+  - 참조하는 테이블의 행 여러 개가 참조되는 테이블의 동일한 행을 참조할 수 있음
+
+    <img src="DB%EC%B4%9D%EC%A0%95%EB%A6%AC.assets/image-20220418035248728.png" alt="image-20220418035248728" style="zoom:50%;" />
+
+-  키를 사용하여 부모 테이블의 유일한 값을 참조 (참조 무결성)
+  - 외래 키의 값이 부모 테이블의 PK일 필요는 없지만, 고유성이 있어야 함.
+
+
+
+###  ForeignKey field (1:N)
+
+- 2개의 위치 인자가 반드시 필요
+
+  1. 참조하는 model class
+
+  2. on_delete 옵션
+     - 외래 키가 참조하는 객체가 사라졌을 때 외래 키를 가진 객체를 어떻게 처리할 것인가?
+     - 데이터 무결성을 위해서 매우 중요한 설정임!!
+     - on_delete=models.CASCADE : 부모객체가 삭제되었을 때 이를 참조하는 객체도 삭제
+
+- migration 할 때 필드 이름에 _id 를 추가하여 DB 열 이름 추가
+
+```python
+# models.py
+class Comment(models.Model):
+    article = models.ForiegnKey(Article, on_delete=models.CASCADE)
+```
+
+- ForeignKey 인스턴스 생성 : comment DB에 article DB를 부모로 하는 외래키 생성
+  - 클래스 이름의 소문자로 생성하는게 기본
+
+![image-20220418040617378](DB%EC%B4%9D%EC%A0%95%EB%A6%AC.assets/image-20220418040617378.png)
+
+
+
+### 댓글 생성
+
+- 에러 `IntegrityError: NOT NULL constraint failed: articles_comment.article_id`
+
+  => article에 데이터가 없기 때문임 => article에 게시글 생성
+
+- 역참조(1=>N) : article 즉 부모 인스턴스 입장에서 참조하고 있는 자식 조회 (댓글 조회)
+
+  ```shell
+  # 댓글 조회
+  article.comment_set.all()
+  
+  # 조회한 모든 댓글 출력하기
+  comments = article.comment_set.all()
+  for comment in comments:
+  	print(comment.content)
+  ```
+
+- 참조 (N => 1) : comment 에서 자신이 참조하고 있는 게시글을 접근 조회
+
+  ```shell
+  # 게시글 조회
+  comment.article.all()
+  
+  # 개별 게시글 조회
+  comment = Comment.objects.get(pk=1)
+  # 제목
+  comment.article
+  # 내용
+  comment.article.content
+  # 외래키
+  comment.article_id
+  ```
+
+
+
+- detail 페이지에서 CommentForm 생성
+
+  ```python
+  # forms.py
+  class CommentForm(forms.ModleForm):
+      class Meta:
+          model = Comment
+          exclude = ('article',) # 외래키 제외, 튜플로 해야함
+  ```
+
+  - 외래키필드를 작성자가 입력하는 상황을 없애기 위해 외래키 제외
+
+  ```python
+  # articles/view.py
+  
+  def comments_create(request, pk):
+      # 게시글 정보가져와
+      article = get_object_or_404(Article, pk=pk)
+      comment_form = CommentForm(request.POST)
+      if comment_form.is_valid():
+          comment = comment_form.save(commit=False)
+          comment.article = article
+          comment.save()
+      return redirect('articles:detial',article.pk)
+  ```
+
+  `comment = comment_form.save(commit=False)` : 아직 데이터베이스에 저장되지 않은 인스턴스를 반환한것
+
+### Customizing authentication in Django
+
+> 회원가입 커스텀
+
+- User 모델 대체하기
+  - Django 내장 User 모델이 제공하는 인증 요구사항이 적절하지 않을 수 있기 때문
+  - User을 참조하는데 사용하는 **`AUTH_USER_MODEL`**값을 제공하여, user라는 기본 모델을 재정의할 수 있도록 한다.
+
+1. AbstractUser : 관리자 권한과 함께 완전한 기능을 갖춘 User 모델을 구현하는 기본 클래스
+
+   - AbstractUser을 상속받아서 새로운 User 모델 작성
+
+   ```python
+   # accounts/models.py
+   
+   from django.contrib.auth.models import AbstactUser
+   
+   class User(AbstractUser):
+       pass
+   ```
+
+2. 기존 Django 의 User 모델이었던 auth 앱의 User모델 안쓰고 내 User을 쓰기 위해 변경
+
+   ```python
+   # settings.py
+   
+   AUTH_USER_MODEL = 'acounts.USer'
+   ```
+
+3. admin site 에 Custom User 모델 등록
+
+   ```python
+   # accounts/admin.py
+   
+   from django.contrib.auth.admin import UserAdmin
+   from .models import User
+   
+   admin.site.register(User, UserAdmin)
+   ```
+
+4. migration
+
+
+
+- 회원가입 시 에러
+
+  ![image-20220418043403950](DB%EC%B4%9D%EC%A0%95%EB%A6%AC.assets/image-20220418043403950.png)
+
+  - forms.py에서 폼을 확장해야한다.
+
+  ```python
+  # forms.py
+  
+  from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+  from django.contrib.auth import get_user_model
+  
+  class CustomUserCreationForm(UserCreationForm):
+      class Meta(UserCreationForm.Meta):
+          model = get_user_model() #User
+          fields = UserCreationForm.Meta.fields + ('email같은거',)
+  ```
+
+  - `get_user_model()` : 현재 프로젝트에서 활성화된 사용자 모델을 반환 
+
+
+
+<hr>
+
+
+
+## 4. Model Relationship2
+
+### User - Article (1:N)
+
+- settings.AUTH_USER_MODEL
+
+  - User 모델에 대한 외래 키 나 N:N 관계를 정의할 때 사용
+
+  - models.py에서 User 모델 참조할 때 사용
+
+- get_user_model()
+
+  - 현재 프로젝트에서 활성화된 User 모델을 반환
+    - 커스텀한 User 모델이 있는 경우 그 모델을 반환하고, 아니면 그냥 User 모델 반환
+  - models.py 아닌 다른 모든 곳에서 User 모델을 참조할 떄 사용
+
+```python
+# articles.models.py
+from django.conf import settings
+
+# Create your models here.
+class Article(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+```
+
+ =>  마이그레이션 해줌
+
+- 에러 
+
+  ![image-20220418044809303](DB%EC%B4%9D%EC%A0%95%EB%A6%AC.assets/image-20220418044809303.png)
+
+  에러 해결 : 게시글 작성 시 작성자 정보(article.user)가 누락되었기 때문에 추가 후 게시글 작성
+
+  ```python
+  # articles/views.py
+  
+  def create(request):
+      if request.method = 'POST':
+          form = ArticleForm(request.POST)
+          if form.is_valid():
+              # 아직 폼에 저장되지 않은 DB를 인스턴스로 반환 후 저장
+              article = form.save(commit=False)
+              # 누락된 작성자 정보를 요청받아서 가져옴
+              article.user = request.user
+              article.save()
+              return redirect('articles:detail', article.pk)
+  ```
+
+  
+
+### User - Comment
+
+- 에러
+
+  ![image-20220418045907116](DB%EC%B4%9D%EC%A0%95%EB%A6%AC.assets/image-20220418045907116.png)
+
+  - 댓글 작성 시 작성자 정보가 누락되었기 때문에 추가해 주어야함
+
+  ```python
+  # articles.views.py
+  
+  def comment_create(request,pk):
+      # 회원인지
+      if request.user.is_authenticated:
+          # 게시글과 요청받은 댓글 폼 가져오기
+          article = get_object_or_404(Article, pk=pk)
+          comment_form = CommentForm(request.POST)
+          if comment_form.is_valid():
+              comment = comment_form.save(commit=False)
+              comment.article = article
+              comment.user = request.user
+              comment.save()
+              return redirect('articles:detail', article.pk)
+      return redirect('accounts:login')
+  
+  ```
+
+  
