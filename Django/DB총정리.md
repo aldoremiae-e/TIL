@@ -214,12 +214,12 @@ examples
 
 ### CRUD
 
-|      | 구문   | 예시                                                         |
-| ---- | ------ | ------------------------------------------------------------ |
-| C    | INSERT | INSERT INTO 테이블이름 (컬럼1, 컬럼2, ..) VALUES (값1, 값2,..); <br>컬럼값이 모두 있을 떄는 굳이 써주지 않아도 됨 <br>rowid 쓸거면 쓰게 되어있음 |
-| R    | SELECT | 전체 조회 : SELECT * FROM 테이블이름;<br>개별 조회1 : SELECT 컬럼1, 컬럼2, .. FROM 테이블이름;<br>개별 조회2 : SELECT 컬럼1, 컬럼2, .. FROM 테이블이름 LIMIT 숫자 OFFSET 숫자;<br>조건 조회 : SELECT 컬럼1, 컬럼2, .. FROM 테이블이름 WHERE 조건; |
-| U    | UPDATE | UPDATE 테이블이름 SET 컬럼1=값1, 컬럼2=값2, .. WHERE 조건;   |
-| D    | DELETE | DELETE FROM 테이블이름 WHERE 조건;                           |
+|      | 구문   | SQL                                                          | ORM                                                          |
+| ---- | ------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| C    | INSERT | INSERT INTO 테이블이름 (컬럼1, 컬럼2, ..) VALUES (값1, 값2,..); <br>컬럼값이 모두 있을 떄는 굳이 써주지 않아도 됨 <br>rowid 쓸거면 쓰게 되어있음 | Artciel.objects.create(필드1='값1', 필드2='값2',..)<hr><br />article = Article()<br>article.title='제목'<br>article.content='내용'<br>article.save()<br>artocle = Article(title='제목', content='내용') |
+| R    | SELECT | 전체 조회 : SELECT * FROM 테이블이름;<br>개별 조회1 : SELECT 컬럼1, 컬럼2, .. FROM 테이블이름;<br>개별 조회2 : SELECT 컬럼1, 컬럼2, .. FROM 테이블이름 LIMIT 숫자 OFFSET 숫자;<br>조건 조회 : SELECT 컬럼1, 컬럼2, .. FROM 테이블이름 WHERE 조건; | 전체 조회 : Article.objects.all()<br>조건 조회: Article.objects.get(pk=pk)<br />필드 조회: Article.objects.filter(조건).value(필드)<br /><br /> 개별조회2: Article.objects.order_by(-age)[:숫자]<br />필터 이용 조건조회 : Atricle.objects.filter(조건).value('필드') |
+| U    | UPDATE | UPDATE 테이블이름 SET 컬럼1=값1, 컬럼2=값2, .. WHERE 조건;   | article = Article.objects.get(pk=101)<br />article.last_name='김'<br />article.save() |
+| D    | DELETE | DELETE FROM 테이블이름 WHERE 조건;                           | Article.objects.get(pk=101).delete()                         |
 
 
 
@@ -405,6 +405,13 @@ rowid  name  age  address
   SELECET 컬럼1, 집계함수(숫자컬럼) FROM 테이블이름 WHERE 조건;
   ```
 
+  ```python
+  #ORM - count
+  Article.objects.filter(조건1, 조건2).count() #AND
+  Article.objects.filter(Q(조건1)|Q(조건2)).count() #OR
+  len(Article.objecnts.all())
+  ```
+  
   
 
 ### LIKE
@@ -658,7 +665,7 @@ class Comment(models.Model):
    ```python
    # settings.py
    
-   AUTH_USER_MODEL = 'acounts.USer'
+   AUTH_USER_MODEL = 'acounts.User'
    ```
 
 3. admin site 에 Custom User 모델 등록
