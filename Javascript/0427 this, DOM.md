@@ -4,6 +4,10 @@
 
 ## 🐣this
 
+1. class 내부의 생성자 함수를 가리킴
+2. 메서드를 가리킴
+3. 그 외 window를 가리킴
+
 ```javascript
 const me = {
     firstName : 'Miae',
@@ -15,6 +19,8 @@ const me = {
 }
 ```
 
+this는 class 내부의 생성자 함수를 가리킴
+
 ```javascript
 > me.fullName
 > NaN
@@ -25,6 +31,8 @@ const me = {
 > getFullName()
 > 에러뜸
 ```
+
+메서드에서는 this가 me를 가리킴
 
 
 
@@ -46,7 +54,7 @@ const you = {
 > NaN //this === window
 ```
 
-
+메서드에서 this는 you를 가리킴
 
 ### 🐤 function 키워드와 화살표 함수의 차이
 
