@@ -12,6 +12,14 @@
 
 
 
+## 로그인
+
+- AuthoenticationForm : 사용자 로그인을 위한 form, request를 첫번째 인자로 취함
+
+- from django.contrib.auth. import login as auth_login 안에 있는 get_user() 메서드
+  - 유효성검사가 통과되면 사용자 객체 할당, 아니면 None
+- 
+
 ## 회원가입
 
 > accounts 앱에서 urls => views => templates/acoounts
@@ -136,3 +144,4 @@ AuthenticationForm : 모델폼이 아닌 그냥폼
 로그인(서버 : 세션정보) = > 사용자 브라우저 쿠키 (request 객체를 활용할 것)
 
 GET(form) POST(로직)
+
