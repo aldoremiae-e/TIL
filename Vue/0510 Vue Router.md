@@ -2,11 +2,15 @@
 
 [TOC]
 
+## Vue Router
 
+- 라우트에 컴포넌트를 매핑한 후, 어떤 주소에 렌더링할 지 알려줌
+- SPA 상에서 라우팅을 쉽게 개발 할 수 있는 기능을 제공
 
 ### 설치
 
 ```vue
+$ vue create pjt-name
 $ vue add router
 ```
 
@@ -16,7 +20,17 @@ $ vue add router
 
 
 
-### index.js
+- Vue Router로 인한 변화
+
+  - App.vue 코드의 router-link , router-view
+
+  - router/index.js 생성
+
+  - views 디렉토리 생성
+
+    
+
+### router/index.js
 
 - 라우트에 관련된 정보 및 설정이 작성되는 곳
 
@@ -48,11 +62,13 @@ $ vue add router
 
   
 
-### router-link
+### App.vue - router-link
 
 - 사용자 네비게이션을 가능하게 하는 컴포넌트
 
 - 목표 경로는 `to` prop으로 지정
+
+- 히스토리모드 : router-link는 클릭 이벤트를 차단하여, 브라우저가 다시 페이지를 로드하지 않도록 해줌
 
   ```vue
   /*App.vue*/
@@ -69,13 +85,18 @@ $ vue add router
   </template>
   ```
 
-  - router-view
-    - 주어진 라우트에 대해 일치하는 컴포넌트를 렌더링하는 컴포넌트
-    - 실제 component가 DOM에 부착되어 보이는 자리를 의미
+
+### router-view
+
+- 주어진 라우트에 대해 일치하는 컴포넌트를 렌더링하는 컴포넌트
+
+- 실제 component가 DOM에 부착되어 보이는 자리를 의미
+
+- router-link 클릭하면 해당 경로와 연경 되어있는 index.js에 정의한 컴포넌트가 위치
 
   
 
-**History API**
+### History API
 
 - HTML History API를 사용해서 router를 구현한 것
 
@@ -101,7 +122,7 @@ $ vue add router
 
 2. 프로그래밍 방신 네비게이션
 
-   - 선언적 방식
+   - 선언적 방식: 선언적 탐색을 위해 a 태그 만드는 것
 
      ```
      <router-link :to='{name: 'home'}'>Home</router-link>
@@ -109,7 +130,7 @@ $ vue add router
 
      
 
-   - 프로그래밍 방식
+   - 프로그래밍 방식 : router 인스턴스 메서드 (push)를 사용
 
      ```js
      // literal string path
@@ -122,12 +143,25 @@ $ vue add router
      router.push({path: 'register', query: {plan: 'private'}})
      ```
 
-     <br>
+     
 
-   - 이동 로직
+   - Vue 인스턴스 내부에서 라우터 인스턴스에 `$router`로 접근 가능
 
-     ```
-     this.$router.push({name: 'home'})
+   - 다른 URL로 이동하려면 this.$router.push 호출
+   
+     - 뒤로가기 버튼 누르면 이전 URL 이동
+     
+     ```vue
+     <script>
+       export default {
+         ...
+         methods: {
+             moveToHome() {
+                 this.$router.push({name: 'home'})
+               },
+           },
+       }
+     </script>
      ```
 
 
