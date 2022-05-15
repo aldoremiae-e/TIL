@@ -172,18 +172,46 @@ $ vue add router
    - 주어진 패턴을 가진 라우트를 동일한 컴포넌트에 매핑해야하는 경우
    - 컴포넌트에서 `this.$route.params`
 
+   ```vue
+   #App.vue
+   <template>
+     <div id="app">
+       <nav>
+         <!-- 1. 링크 적기-->
+         <router-link :to="{name: 'lotto', params: {lottoNum: 6}}">Lotto</router-link>
+       </nav>
+       <p>
+         <router-view/>
+       </p>
+       
+     </div>
+   </template>
+   ```
+
+   
+
    ```js
    #router/index.js
+   // 2. 등록하기
    import UserProfile from '../views/UserProfile.vue'
+   import LottoView from '../views/LottoView.vue'
    Vue.use(VueRouter)
+   
+   // 3. url 매핑하기
    const routes = [
    	{
        path: '/user/:userId/:username/:major',
        name: 'profile',
        component: UserProfile,
      },
+       {
+       path: '/lotto/:lottoNum',
+       name: 'lotto',
+       component: LottoView,
+     },
+   ]
    ```
-   
+
    ```vue
    #UserProfile.vue
    <template>
@@ -208,7 +236,39 @@ $ vue add router
    }
    </script>
    ```
+
+   ```vue
+   # LottoView.vue
+   <template>
+     <div>
+       <h1>Lotto Page</h1>
+       <!--params print-->
+       <h2>{{ $route.params.lottoNum }}개의 번호를 추천합니다.</h2>
+       <button @click="pickLottoNums">PICK LOTTO</button>
+       <p> {{ selectNums }} </p>
+     </div>
+   </template>
    
+   <script>
+   import _ from 'lodash'
+   
+   export default {
+     name: 'LottoView',
+     data(){
+       return {
+         selectNums: [],
+       }
+     },
+     methods: {
+       pickLottoNums(){
+         const numbers = _.range(1, 46)
+         this.selectNums = _.sampleSize(numbers, this.$route.params.lottoNum)
+       }
+     }
+   }
+   </script>
+   ```
+
    
 
 <hr>
