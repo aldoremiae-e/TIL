@@ -40,7 +40,7 @@ $ vue add router
   import LottoView from '../views/LottoView.vue'
   import LunchView from '../views/LunchView.vue'
   Vue.use(VueRouter)
-  // 2. 추가한다
+  // 2. 추가한다- 마치 urlpatterns
   const routes = [
     {
       path: '/',
@@ -172,6 +172,43 @@ $ vue add router
    - 주어진 패턴을 가진 라우트를 동일한 컴포넌트에 매핑해야하는 경우
    - 컴포넌트에서 `this.$route.params`
 
+   ```js
+   #router/index.js
+   import UserProfile from '../views/UserProfile.vue'
+   Vue.use(VueRouter)
+   const routes = [
+   	{
+       path: '/user/:userId/:username/:major',
+       name: 'profile',
+       component: UserProfile,
+     },
+   ```
+   
+   ```vue
+   #UserProfile.vue
+   <template>
+     <div>
+       <h1>user profile</h1>
+       <p>
+         당신의 id는 {{ user.userId }}
+         당신의 이름은 {{ user.username }}
+         전공은 {{ user.major }}
+       </p>
+     </div>
+   </template>
+   
+   <script>
+   export default {
+     name: 'UserProfile',
+     data: function () {
+       return {
+         user: this.$route.params, // 여기아주중요!!!!!!!!!!!!!!!!!!
+       }
+     }
+   }
+   </script>
+   ```
+   
    
 
 <hr>
